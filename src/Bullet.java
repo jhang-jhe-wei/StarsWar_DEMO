@@ -3,22 +3,12 @@ import java.awt.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Bullet extends Item {
+public abstract class Bullet extends Item {
     int power;
-    Item creater;
     Timer move = null;
 
-    public Bullet(Monster creater, int x, int y, int dx, int dy, ImageIcon icon, int power) {
-        super(x, y, dx, dy, icon);
-        this.creater = creater;
-        this.power = power;
-        move = new Timer();
-        start();
-    }
-
-    public Bullet(Player creater, int x, int y, int dx, int dy, ImageIcon icon, int power) {
-        super(x, y, dx, dy, icon);
-        this.creater = creater;
+    public Bullet(int x, int y, int dx, int dy,int width,int height, ImageIcon icon, int power) {
+        super(x, y, dx, dy,width,height, icon);
         this.power = power;
         move = new Timer();
         start();
@@ -33,35 +23,7 @@ public class Bullet extends Item {
         }, 0, Game.BULLET_SPEED);
     }
 
-    void updata() {
-        x += dx;
-        y += dy;
-        if (creater.getClass().toString().equals(Monster.class.toString())) {
-            if (collide(GameBackend.getCurrent().getPlayer())) {
-                GameBackend.getCurrent().getPlayer().beAttacked(power);
-                stop();
-                GameBackend.getCurrent().getMonsters().get(GameBackend.getCurrent().getMonsters().indexOf(creater)).removeBullet(this);
-            }
-            if (GameFrame.outGameRange(this)) {
-                stop();
-                GameBackend.getCurrent().getMonsters().get(GameBackend.getCurrent().getMonsters().indexOf(creater)).removeBullet(this);
-            }
-        } else {
-            GameBackend.getCurrent().getMonsters().forEach(monster -> {
-                if (collide(monster)) {
-                    monster.beAttacked(power);
-                    stop();
-                    GameBackend.getCurrent().getPlayer().removeBullet(this);
-                }
-                if (GameFrame.outGameRange(this)) {
-                    stop();
-                    GameBackend.getCurrent().getPlayer().removeBullet(this);
-                }
-            });
-
-        }
-
-    }
+    public abstract void updata();
 
     void stop() {
         move.cancel();
@@ -69,7 +31,9 @@ public class Bullet extends Item {
 
     @Override
     public void render(Graphics g) {
-
+        int adjust_x = x - width / 2;
+        int adjust_y = y - height / 2;
+        g.drawImage(icon.getImage(), adjust_x, adjust_y, width, height, null);
     }
 
 }

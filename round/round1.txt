@@ -1,0 +1,14 @@
+Monster 0 0 10 0
+Monster 100 0 10 0
+Monster 200 0 10 0
+Monster 300 0 10 0
+Monster 400 0 10 0
+Monster 500 0 10 0
+Monster 600 0 10 0
+Monster 0 100 10 0
+Monster 100 100 10 0
+Monster 200 100 10 0
+Monster 300 100 10 0
+Monster 400 100 10 0
+Monster 500 100 10 0
+Monster 600 100 10 0

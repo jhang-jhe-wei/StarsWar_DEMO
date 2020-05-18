@@ -10,14 +10,14 @@ public abstract class Item {
     protected int height;
     protected ImageIcon icon;
 
-    public Item(int x, int y, int dx, int dy,ImageIcon icon) {
+    public Item(int x, int y, int dx, int dy,int width,int height,ImageIcon icon) {
 
         this.x = x;
         this.y = y;
         this.dx = dx;
         this.dy = dy;
-        this.width = icon.getIconWidth();
-        this.height = icon.getIconHeight();
+        this.width=width;
+        this.height=height;
         this.icon = icon;
     }
 
@@ -83,7 +83,7 @@ public abstract class Item {
         double distance=Math.sqrt(Math.pow(x_distance,2)+Math.pow(y_distance,2));
         int max_width=Math.max(width,item.width);
         int max_height=Math.max(height,item.height);
-        int radius=Math.min(max_width,max_height);
+        int radius=Math.min(max_width,max_height)/2;
         if(distance<radius)
         return true;
         else return false;

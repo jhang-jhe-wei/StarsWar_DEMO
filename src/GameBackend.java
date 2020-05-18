@@ -1,6 +1,4 @@
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,88 +7,41 @@ public class GameBackend {
     private static GameBackend current = null;
     private List<Monster> monsters = null;
     private static Player player = null;
-    public boolean key_w;
-    public boolean key_a;
-    public boolean key_s;
-    public boolean key_d;
-    public boolean key_esc;
-    public boolean key_space;
-    public boolean key_enter;
+    public static boolean key_w;
+    public static boolean key_a;
+    public static boolean key_s;
+    public static boolean key_d;
+    public static boolean key_esc;
+    public static boolean key_z;
+    public static boolean key_enter;
 
     public GameBackend() {
         current = this;
         monsters = Collections.synchronizedList(new ArrayList<Monster>());
-
-        GameFrame.getCurrent().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                super.keyPressed(e);
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP:
-                        key_w = true;
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        key_s = true;
-                        break;
-                    case KeyEvent.VK_LEFT:
-                        key_a = true;
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        key_d = true;
-                        break;
-                    case KeyEvent.VK_SPACE:
-                        key_space = true;
-                        break;
-                    case KeyEvent.VK_ESCAPE:
-                        key_esc = true;
-                        break;
-                    case KeyEvent.VK_ENTER:
-                        key_enter = true;
-                        break;
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                super.keyReleased(e);
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP:
-                        key_w = false;
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        key_s = false;
-                        break;
-                    case KeyEvent.VK_LEFT:
-                        key_a = false;
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        key_d = false;
-                        break;
-                    case KeyEvent.VK_SPACE:
-                        key_space = false;
-                        break;
-                    case KeyEvent.VK_ESCAPE:
-                        key_esc = false;
-                        break;
-                    case KeyEvent.VK_ENTER:
-                        key_enter = false;
-                        break;
-                }
-            }
-        });
-        GameFrame.getCurrent().setFocusable(true);
+        player=new Player();
     }
 
 
     public void gameLoading(int current_round) {
-        monsters.forEach(monster -> {monster.stop();});
+        monsters.forEach(monster -> {
+            monster.stop();
+        });
+        player.bullets.clear();
         monsters.clear();
         GameParser.parseRound(current_round);
-        player=new Player();
+        player = new Player();
+        GamePanel.getCurrent().renderLoad(current_round);
     }
 
     public int gameStart() {
-        return Game.NORMAL;
+        player.start();
+        monsters.forEach(monster -> {monster.start();});
+        GamePanel.getCurrent().renderGame();
+        while(!monsters.isEmpty()){
+            if(player.isDead())
+                return Game.PLAYER_DIE;
+        };
+        return Game.PLAYER_ALIVE;
     }
 
     public static GameBackend getCurrent() {
@@ -98,8 +49,8 @@ public class GameBackend {
     }
 
     public Player getPlayer() {
-        if(player==null)
-            player=new Player();
+        if (player == null)
+            player = new Player();
         return player;
     }
 
@@ -108,6 +59,7 @@ public class GameBackend {
     }
 
     public void addMonster(Monster monster) {
+//        System.out.println("add...");
         monsters.add(monster);
     }
 
@@ -116,9 +68,32 @@ public class GameBackend {
     }
 
     public void close() {
+        player.stop();
+        monsters.forEach(monster -> {monster.stop();});
+        current=null;
     }
 
     public int chooseMode() {
-        return 0;
+        int choose=Game.START;
+        GamePanel.getCurrent().renderTitle(choose);
+        while(!key_enter) {
+            if(key_w||key_s){
+
+                if (key_s)choose+=1;
+                if (key_w)choose-=1;
+                if(choose>2)choose=2;
+                if(choose<0)choose=0;
+                GamePanel.getCurrent().renderTitle(choose);
+            }
+            delay();
+        }
+        return choose;
+    }
+    public static void delay(){
+        try {
+            Thread.sleep(Game.KEYBOARD_REPAINT_SPEED);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
