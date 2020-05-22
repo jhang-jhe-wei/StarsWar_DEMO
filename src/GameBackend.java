@@ -23,6 +23,7 @@ public class GameBackend {
 
 
     public void gameLoading(int current_round) {
+        GamePanel.getCurrent().renderLoad(current_round);
         monsters.forEach(monster -> {
             monster.stop();
             monster.bullets.clear();
@@ -33,7 +34,6 @@ public class GameBackend {
         player.stop();
         player = new Player();
         GameParser.parseRound(current_round);
-        GamePanel.getCurrent().renderLoad(current_round);
     }
 
     public int gameStart() {
