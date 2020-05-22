@@ -9,7 +9,7 @@ public class GameFrame extends JFrame {
         current = this;
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(Game.FRAME_WIDTH, Game.FRAME_HEIGHT);
-        setLocation(200,200);
+        setLocation(0,0);
         setContentPane(new GamePanel(gb));
         setResizable(false);
         setVisible(true);
